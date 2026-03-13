@@ -14,10 +14,12 @@ WHITE = (255,255,255)
 GREEN = (0, 255, 0)
 RED = (255,0,0)
 ORANGE = (255, 204, 0)
+YELLOW = (255,255,0)
 BLUE = (51, 102, 255)
 
 maze = [[[False, False, False, False] for i in range(maze_size)] for j in range(maze_size)]
 enemies = []
+collectibles = []
 player = (0,0)
 finish = (99,99)
 
@@ -79,6 +81,13 @@ def toggle_enemy():
     else:
         enemies.append(coord)
 
+def toggle_collectible():
+    coord = (cursor.x, cursor.y)
+    if coord in collectibles:
+        collectibles.remove(coord)
+    else:
+        collectibles.append(coord)
+
 def move_player():
     coord = (cursor.x, cursor.y)
     player = coord
@@ -101,6 +110,10 @@ def draw_finish(canvas, coord):
 def draw_enemies(canvas, coords):
     for coord in coords:
         pygame.draw.rect(canvas, RED, (coord[0]*cell_width, coord[1]*cell_width, cell_width, cell_width))
+
+def draw_collectibles(canvas, coords):
+    for coord in coords:
+        pygame.draw.rect(canvas, YELLOW, (coord[0]*cell_width, coord[1]*cell_width, cell_width, cell_width))
 
 def save_maze(player, maze, finish, enemies):
     name = input("Enter Maze Name:")
@@ -125,6 +138,7 @@ def save_maze(player, maze, finish, enemies):
             "player": player,
             "finish": finish,
             "enemies": enemies,
+            "collectibles": collectibles,
             "maze": outputMaze
         }
 
@@ -162,6 +176,8 @@ while not exit:
                 toggle_wall((0,1))
             elif event.key == pygame.K_e:
                 toggle_enemy()
+            elif event.key == pygame.K_c:
+                toggle_collectible()
             elif event.key == pygame.K_f:
                 finish = move_finish(player, finish)
             elif event.key == pygame.K_p:
@@ -169,6 +185,7 @@ while not exit:
             elif event.key == pygame.K_ESCAPE:
                 save_maze(player, maze, finish, enemies)
     
+    draw_collectibles(window, collectibles)
     draw_enemies(window, enemies)
     draw_finish(window, finish)
     draw_player(window, player)
